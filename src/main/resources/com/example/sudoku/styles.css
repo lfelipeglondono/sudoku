@@ -1,0 +1,20 @@
+.cell {
+    -fx-border-color: #9a4d03;
+    -fx-border-width: 2 2 2 2; /* Superior, Derecho, Inferior, Izquierdo */
+    -fx-alignment: center;
+
+    -fx-background-color: #f4bf7d;
+}
+
+.cell-right {
+    -fx-border-color: #9a4d03;
+    -fx-border-width: 2 5 2 2; /* Borde derecho más grueso */
+}
+
+.cell-bottom {
+    -fx-border-width: 2 2 5 2; /* Borde derecho más grueso */
+}
+
+.cell-right-bottom {
+    -fx-border-width: 2 5 5 2; /* Borde derecho más grueso */
+}
