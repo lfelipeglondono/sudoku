@@ -1,0 +1,6 @@
+module:com.example.sudoku
+com.example.sudoku
+com.example.sudoku.controllers
+com.example.sudoku.models
+com.example.sudoku.views
+com.example.sudoku.views.alert
