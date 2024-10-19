@@ -1,0 +1,22 @@
+.cell {
+    -fx-pref-height: 60px;
+    -fx-border-color: #9a4d03;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-border-width: 2 2 2 2;
+    -fx-alignment: center;
+    -fx-background-color: #f4bf7d;
+}
+
+.cell-right {
+    -fx-border-color: #9a4d03;
+    -fx-border-width: 2 5 2 2;
+}
+
+.cell-bottom {
+    -fx-border-width: 2 2 5 2;
+}
+
+.cell-right-bottom {
+    -fx-border-width: 2 5 5 2;
+}
