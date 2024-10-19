@@ -1,7 +1,7 @@
 package com.example.sudoku.controllers;
 
+import com.example.sudoku.models.Sudoku;
 import com.example.sudoku.views.alert.AlertBox;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
@@ -10,32 +10,39 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.function.UnaryOperator;
 
+/**
+ * This class is the controller for the Game window.
+ * @author Felipe Garcia
+ * @version 1.0
+ */
 public class GameController {
     @FXML
     private GridPane sudoku;
-    ArrayList<ArrayList<TextField>> sudokuFields = new ArrayList<>();
+    private final ArrayList<ArrayList<TextField>> sudokuFields = new ArrayList<>();
+    private Sudoku sudokuGame;
+    private final AlertBox alertBox = new AlertBox();
 
+    /**
+     * This method generates the Sudoku cells, assigning a format to them, and handles events in case something is written.
+     */
     public void initialize() {
-        TextField currentTextField;
-
         for (int row = 0; row < 6; row++) {
             sudokuFields.add(new ArrayList<>());
-
             for (int col = 0; col < 6; col++) {
-                sudokuFields.get(row).add(new TextField());
-                int finalRow = row;
-                int finalCol = col;
+                TextField currentTextField = new TextField();
+                sudokuFields.get(row).add(currentTextField);
 
                 UnaryOperator<TextFormatter.Change> filter = change -> {
                     String newText = change.getControlNewText();
-                    if (newText.matches("\\d?")) { // Permitir solo un dígito
+                    if (newText.matches("\\d?")) {
                         return change;
                     }
                     return null;
                 };
 
-                currentTextField = sudokuFields.get(row).get(col);
                 currentTextField.setTextFormatter(new TextFormatter<>(filter));
+                int finalRow = row;
+                int finalCol = col;
                 currentTextField.textProperty().addListener((observable, oldValue, newValue) -> handleInputField(newValue, finalRow, finalCol));
                 currentTextField.getStyleClass().add("cell");
                 currentTextField.setMinHeight(40);
@@ -52,98 +59,47 @@ public class GameController {
             }
         }
 
-        fillRandomBoxes();
+        sudokuGame = new Sudoku(sudokuFields);
+        sudokuGame.fillRandomBoxes();
     }
 
-    public void fillRandomBoxes() {
-        Random random = new Random();
-
-        for (int boxRow = 0; boxRow < 6; boxRow += 2) {
-            for (int boxCol = 0; boxCol < 6; boxCol += 3) {
-                int filled = 0;
-
-                while (filled < 2) {
-                    int row = boxRow + random.nextInt(2);
-                    int col = boxCol + random.nextInt(3);
-                    int randomValue = 1 + random.nextInt(6);
-
-                    TextField textField = sudokuFields.get(row).get(col);
-                    if (textField.getText().isEmpty() && validateNumber(row, col, randomValue)) {
-                        textField.setText(String.valueOf(randomValue));
-                        textField.setEditable(false);
-                        textField.setStyle("-fx-background-color: #e1b884");
-                        filled++;
-                    }
-                }
-            }
-        }
-    }
-
-    public boolean validateNumber(int row, int col, int n) {
-        TextField textField;
-
-        for (int i = 0; i < 6; i++) {
-            textField = sudokuFields.get(i).get(col);
-            if (!textField.getText().isEmpty() && Integer.parseInt(textField.getText()) == n && i != row) {
-                return false;
-            }
-        }
-
-        for (int j = 0; j < 6; j++) {
-            textField = sudokuFields.get(row).get(j);
-            if (!textField.getText().isEmpty() && Integer.parseInt(textField.getText()) == n && j != col) {
-                return false;
-            }
-        }
-
-        int boxRowStart = (row / 2) * 2;
-        int boxColStart = (col / 3) * 3;
-
-        for (int i = boxRowStart; i < boxRowStart + 2; i++) {
-            for (int j = boxColStart; j < boxColStart + 3; j++) {
-                textField = sudokuFields.get(i).get(j);
-
-                if (!textField.getText().isEmpty() && Integer.parseInt(textField.getText()) == n && !(i == row && j == col)) {
-                    return false;
-                }
-            }
-        }
-
-        return true;
-    }
-
+    /**
+     * This method allows for suggesting hints to fill in the Sudoku.
+     */
     @FXML
-    void onHandleHelpButton(ActionEvent event) {
+    void onHandleHelpButton() {
         TextField textField;
-        for (int i = 0; i < 6; i++) {
-            for (int j = 0; j < 6; j++) {
-                textField = sudokuFields.get(i).get(j);
-                int validNumber = findValidNumber(i, j);
+        Random rand = new Random();
+        int n, row, col;
 
-                if (!textField.getText().isEmpty()) {
-                    continue;
-                }
+        while (sudokuGame.checkThereNumberValid()) {
+            n = rand.nextInt(6) + 1;
+            row = rand.nextInt(6);
+            col = rand.nextInt(6);
 
-                if (validNumber != -1) {
-                    textField.setStyle("-fx-prompt-text-fill: yellow; -fx-border-color: #9a4d03;");
-                    textField.setPromptText(String.valueOf(validNumber));
-                    return;
-                }
+            textField = sudokuFields.get(row).get(col);
+
+            if (!textField.getText().isEmpty()) {
+                continue;
+            }
+
+            if (sudokuGame.validateNumber(row, col, n)) {
+                textField.setStyle("-fx-prompt-text-fill: yellow; -fx-border-color: #9a4d03;");
+                textField.setPromptText(String.valueOf(n));
+                return;
             }
         }
+
+        alertBox.showAlert("Sudoku - Information", "Ops!", "There are no numbers available to suggest to you.");
     }
 
-    private int findValidNumber(int row, int col) {
-        for (int n = 1; n <= 6; n++) {
-            if (validateNumber(row, col, n)) {
-                return n;
-            }
-        }
-        return -1;
-    }
-
+    /**
+     * This method controls the input in the Sudoku cells and checks if the number is valid.
+     * @param newValue It's the new number entered.
+     * @param row Row where the number was entered.
+     * @param col Column where the number was entered.
+     */
     public void handleInputField(String newValue, int row, int col) {
-        AlertBox alertBox = new AlertBox();
         TextField textField = sudokuFields.get(row).get(col);
 
         int newValueInt;
@@ -160,14 +116,15 @@ public class GameController {
                     throw new IllegalArgumentException("You entered a number that is not in the range of 1 to 6.");
                 }
 
-                if (!validateNumber(row, col, newValueInt)) {
+                if (!sudokuGame.validateNumber(row, col, newValueInt)) {
                     textField.setPromptText(String.valueOf(newValueInt));
-                    throw new Exception("The number in that position is invalid. Number: " + String.valueOf(newValueInt));
+                    throw new Exception("The number in that position is invalid. Number: " + newValueInt);
                 }
-            } catch (NumberFormatException e) {
-                System.out.println("You must enter a number.");
-                textField.setText("");
-                alertBox.showAlert("Sudoku - Error", "You must enter only numbers from 1 to 6.", e.getMessage());
+
+                if (sudokuGame.win()) {
+                    alertBox.showAlert("Sudoku - Win", "Congratulations!", "You won! You completed the Sudoku.");
+                }
+
             } catch (IllegalArgumentException e) {
                 textField.setText("");
                 alertBox.showAlert("Sudoku - Error", "You must enter only numbers from 1 to 6.", e.getMessage());
@@ -177,6 +134,5 @@ public class GameController {
                 alertBox.showAlert("Sudoku - Error", "Something went wrong", e.getMessage());
             }
         }
-
     }
 }

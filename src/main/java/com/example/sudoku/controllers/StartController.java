@@ -8,6 +8,9 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+/**
+ * This method asks the user if they want to play; if so, it sends them to the game window.
+ */
 public class StartController  {
     @FXML
     void onHandlePlayButton(ActionEvent event) throws IOException {
