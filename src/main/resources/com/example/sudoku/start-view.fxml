@@ -41,7 +41,7 @@
             <Insets bottom="40.0" />
          </VBox.margin>
       </Label>
-      <Button mnemonicParsing="false" onAction="#onHandlePlayButton" style="-fx-background-color: #e4bf9a; -fx-border-width: 4; -fx-border-color: #816155; -fx-border-radius: 5px;" text="PLAY" textFill="#816155">
+      <Button mnemonicParsing="false" onAction="#onHandlePlayButton" style="-fx-background-color: white; -fx-border-width: 7; -fx-border-color: #816155; -fx-border-radius: 0px;" text="PLAY" textFill="#816155">
          <font>
             <Font name="System Bold" size="18.0" />
          </font>
