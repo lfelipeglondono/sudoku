@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="500.0" spacing="20.0" style="-fx-background-color: #e5bf9a;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.sudoku.controllers.GameController">
+<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="630.0" prefWidth="500.0" spacing="20.0" style="-fx-background-color: #e5bf9a;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.sudoku.controllers.GameController">
    <children>
       <Label text="SUDOKU">
          <font>
@@ -24,7 +24,7 @@
                   <Font size="18.0" />
                </font>
             </Label>
-            <Button mnemonicParsing="false" onAction="#onHandleHelpButton" prefHeight="36.0" prefWidth="61.0" style="-fx-background-color: #83625d; -fx-border-color: white; -fx-border-width: 3; -fx-border-radius: 3;" text="HINT" textFill="WHITE">
+            <Button mnemonicParsing="false" onAction="#onHandleHintButton" prefHeight="36.0" prefWidth="61.0" style="-fx-background-color: #83625d; -fx-border-color: white; -fx-border-width: 3; -fx-border-radius: 3;" text="HINT" textFill="WHITE">
                <font>
                   <Font name="System Bold" size="14.0" />
                </font></Button>
@@ -51,8 +51,25 @@
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
       </GridPane>
+      <HBox alignment="CENTER" layoutX="10.0" layoutY="237.0" prefHeight="63.0" prefWidth="466.0" spacing="20.0" style="-fx-background-color: #9f4b00;">
+         <children>
+            <Button mnemonicParsing="false" onAction="#onHandleRestartButton" prefHeight="36.0" prefWidth="102.0" style="-fx-background-color: white; -fx-border-color: white; -fx-border-width: 3; -fx-border-radius: 3;" text="RESTART" textFill="#83625d">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Button>
+            <Button layoutX="230.0" layoutY="24.0" mnemonicParsing="false" onAction="#onHandleHelpButton" prefHeight="36.0" prefWidth="61.0" style="-fx-background-color: white; -fx-border-color: white; -fx-border-width: 3; -fx-border-radius: 3;" text="HELP" textFill="#83625d">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Button>
+         </children>
+         <padding>
+            <Insets left="20.0" right="20.0" />
+         </padding>
+      </HBox>
    </children>
    <padding>
-      <Insets bottom="30.0" top="20.0" />
+      <Insets top="20.0" />
    </padding>
 </VBox>

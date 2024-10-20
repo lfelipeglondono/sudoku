@@ -1,15 +1,37 @@
 .cell {
     -fx-pref-height: 60px;
-    -fx-border-color: #9a4d03;
+    -fx-border-color: #a04900;
     -fx-font-size: 24px;
-    -fx-font-weight: bold;
+    -fx-font-weight: bolder;
     -fx-border-width: 2 2 2 2;
     -fx-alignment: center;
     -fx-background-color: #f4bf7d;
+    -fx-text-fill: white;
+}
+
+.pinned-cell {
+    -fx-text-fill: #a04900;
+}
+
+.hint-cell {
+    -fx-prompt-text-fill: yellow;
+    -fx-border-color: #9a4d03;
+}
+
+.error-cell {
+    -fx-border-color: red;
+    -fx-prompt-text-fill: red;
+}
+
+.others-highlight {
+    -fx-background-color: #e0b179;
+}
+
+.highlight {
+    -fx-background-color: #c29a69;
 }
 
 .cell-right {
-    -fx-border-color: #9a4d03;
     -fx-border-width: 2 5 2 2;
 }
 

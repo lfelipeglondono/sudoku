@@ -1,6 +1,5 @@
 package com.example.sudoku.models;
 
-import javafx.scene.control.TextField;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -10,144 +9,97 @@ import java.util.Random;
  *  @version 1.0
  */
 public class Sudoku {
-    private final ArrayList<ArrayList<TextField>> sudokuFields;
+    private final int SIZE = 6;
+    private final int SUBGRID_ROWS = 2;
+    private final int SUBGRID_COLS = 3;
 
-    /**
-     * This method is the constructor of the class; it is initialized with the array of text fields (Sudoku fields).
-     * @param sudokuFields sudoku fields
-     */
-    public Sudoku(ArrayList<ArrayList<TextField>> sudokuFields) {
-        this.sudokuFields = sudokuFields;
+    private final ArrayList<ArrayList<Integer>> board;
+
+    public Sudoku() {
+        board = new ArrayList<>();
+
+        for (int i = 0; i < SIZE; i++) {
+            board.add(new ArrayList<>());
+
+            for (int j = 0; j < SIZE; j++) {
+                board.get(i).add(0);
+            }
+        }
+
+        while (!generateSudoku());
     }
 
-    /**
-     * This method initially fills the Sudoku with 2 numbers per box.
-     */
-    public void fillRandomBoxes() {
-        Random random = new Random();
+    public boolean generateSudoku() {
+        fillDiagonal();
+        return fillRemaining(0, 3);
+    }
 
-        for (int boxRow = 0; boxRow < 6; boxRow += 2) {
-            for (int boxCol = 0; boxCol < 6; boxCol += 3) {
-                int filled = 0;
+    public void fillDiagonal() {
+        int number;
+        Random rand = new Random();
 
-                while (filled < 2) {
-                    int row = boxRow + random.nextInt(2);
-                    int col = boxCol + random.nextInt(3);
-                    int randomValue = 1 + random.nextInt(6);
+        for (int row = 0; row < SUBGRID_ROWS; row++) {
+            for (int col = 0; col < SUBGRID_COLS; col++) {
 
-                    TextField textField = sudokuFields.get(row).get(col);
-                    if (textField.getText().isEmpty() && validateNumber(row, col, randomValue)) {
-                        textField.setText(String.valueOf(randomValue));
-                        textField.setEditable(false);
-                        textField.setStyle("-fx-background-color: #e1b884");
-                        filled++;
-                    }
-                }
+                do {
+                    number = rand.nextInt(SIZE) + 1;
+                } while (!isValid(row, col, number));
+
+                board.get(row).set(col, number);
+
+                do {
+                    number = rand.nextInt(SIZE) + 1;
+                } while (!isValid(row + 2, col + 3, number));
+
+                board.get(row + 2).set(col + 3, number);
             }
         }
     }
 
-    /**
-     * This method validates that the entered number is valid.
-     * @param row Row where the number will be entered.
-     * @param col Column where the number will be entered.
-     * @param n Number that will be entered.
-     * @return A boolean indicating whether the number exists or not.
-     */
-    public boolean validateNumber(int row, int col, int n) {
-        TextField textField;
+    public boolean fillRemaining(int row, int col) {
+        if (row == SIZE) return true;
+        if (col == SIZE) return fillRemaining(row + 1, 0);
+        if (board.get(row).get(col) != 0) return fillRemaining(row, col + 1);
 
-        for (int i = 0; i < 6; i++) {
-            textField = sudokuFields.get(i).get(col);
-            if (i != row) {
-                if (!textField.getText().isEmpty() && Integer.parseInt(textField.getText()) == n) {
-                    return false;
-                }
-            }
-
-            textField = sudokuFields.get(row).get(i);
-
-            if (i != col) {
-                if (!textField.getText().isEmpty() && Integer.parseInt(textField.getText()) == n) {
-                    return false;
-                }
-            }
-        }
-
-        int boxRowStart = (row / 2) * 2;
-        int boxColStart = (col / 3) * 3;
-
-        for (int i = boxRowStart; i < boxRowStart + 2; i++) {
-            for (int j = boxColStart; j < boxColStart + 3; j++) {
-                textField = sudokuFields.get(i).get(j);
-
-                if (!textField.getText().isEmpty() && Integer.parseInt(textField.getText()) == n && !(i == row && j == col)) {
-                    return false;
-                }
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * This method checks if a number can be entered in any cell.
-     * @return A boolean checking if any cell can take a number.
-     */
-    public boolean checkThereNumberValid() {
-        TextField textField;
-
-        for (int i = 0; i < 6; i++) {
-            for (int j = 0; j < 6; j++) {
-                textField = sudokuFields.get(i).get(j);
-                int validNumber = findValidNumber(i, j);
-
-                if (!textField.getText().isEmpty()) {
-                    continue;
-                }
-
-                if (validNumber != -1) {
-                    return true;
-                }
+        for (int k = 0; k <= SIZE; k++) {
+            if (isValid(row, col, k)) {
+                board.get(row).set(col, k);
+                if (fillRemaining(row, col + 1)) return true;
+                board.get(row).set(col, 0);
             }
         }
 
         return false;
     }
 
-    /**
-     * This number searches for valid numbers in the position where it is entered.
-     * @param row Row where the number will be filled in.
-     * @param col Column where the number will be filled in.
-     * @return A valid number in that position; if none are valid, it returns -1.
-     */
+    public boolean isValid(int row, int col, int n) {
+        for (int i = 0; i < SIZE; i++) {
+            if (board.get(i).get(col) == n) {
+                return false;
+            }
 
-    public int findValidNumber(int row, int col) {
-        for (int n = 1; n <= 6; n++) {
-            if (validateNumber(row, col, n)) {
-                return n;
+            if (board.get(row).get(i) == n) {
+                return false;
             }
         }
-        return -1;
-    }
 
-    /**
-     * This method checks that all the cells have a value; since they were valid, it means that you won.
-     * @return Boolean checking if you won.
-     */
-    public boolean win() {
-        TextField textField;
+        int boxRowStart = (row / SUBGRID_ROWS) * SUBGRID_ROWS;
+        int boxColStart = (col / SUBGRID_COLS) * SUBGRID_COLS;
+        int valueCell;
 
-        for (int row = 0; row < 6; row++) {
-            for (int col = 0; col < 6; col++) {
-                textField = sudokuFields.get(row).get(col);
-
-                if (textField.getText().isEmpty()) {
+        for (int i = boxRowStart; i < boxRowStart + SUBGRID_ROWS; i++) {
+            for (int j = boxColStart; j < boxColStart + SUBGRID_COLS; j++) {
+                valueCell = board.get(i).get(j);
+                if (valueCell == n) {
                     return false;
                 }
             }
         }
 
         return true;
+    }
+
+    public int getNumber(int row, int col) {
+        return board.get(row).get(col);
     }
 }

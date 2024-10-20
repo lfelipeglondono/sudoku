@@ -1,5 +1,7 @@
 package com.example.sudoku.views.alert;
 
+import javafx.scene.control.Alert;
+
 /**
  * This interface is used to implement it in the AlertBox.
  * @author Felipe Garcia
@@ -12,14 +14,5 @@ public interface AlertBoxInterface {
      * @param header Large title.
      * @param message Message of the information to be conveyed.
      */
-    void showAlert(String title, String header, String message);
-
-    /**
-     * This method generates a confirmation alert.
-     * @param title Title of the window.
-     * @param header Large title.
-     * @param message Message of the information to be conveyed.
-     * @return A boolean, depending on whether the person accepted or not.
-     */
-    boolean showConfirmation(String title, String header, String message);
+    boolean showAlert(Alert.AlertType alertType, String title, String header, String message);
 }
