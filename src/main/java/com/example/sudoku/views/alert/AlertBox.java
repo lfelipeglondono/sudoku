@@ -18,24 +18,8 @@ public class AlertBox implements AlertBoxInterface {
      * @param header Large title.
      * @param message Message of the information to be conveyed.
      */
-    public void showAlert(String title, String header, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(header);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
-    /**
-     * This method generates a confirmation alert.
-     * @param title Title of the window.
-     * @param header Large title.
-     * @param message Message of the information to be conveyed.
-     * @return A boolean, depending on whether the person accepted or not.
-     */
-    @Override
-    public boolean showConfirmation(String title, String header, String message) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+    public boolean showAlert(Alert.AlertType alertType, String title, String header, String message) {
+        Alert alert = new Alert(alertType);
         alert.setTitle(title);
         alert.setHeaderText(header);
         alert.setContentText(message);
