@@ -15,6 +15,10 @@ public class Sudoku {
 
     private final ArrayList<ArrayList<Integer>> board;
 
+    /**
+     * Constructor for the Sudoku class.
+     * Initializes the board with zeros and generates a valid Sudoku puzzle.
+     */
     public Sudoku() {
         board = new ArrayList<>();
 
@@ -29,12 +33,19 @@ public class Sudoku {
         while (!generateSudoku());
     }
 
+    /**
+     * Generates a valid Sudoku puzzle by filling in the diagonal subgrids and then filling the remaining cells.
+     * @return true if the Sudoku puzzle was generated successfully, false otherwise.
+     */
     public boolean generateSudoku() {
         fillDiagonal();
         return fillRemaining(0, 3);
     }
 
-    public void fillDiagonal() {
+    /**
+     * Fills the diagonal subgrids with random numbers ensuring they are valid.
+     */
+    private void fillDiagonal() {
         int number;
         Random rand = new Random();
 
@@ -56,7 +67,13 @@ public class Sudoku {
         }
     }
 
-    public boolean fillRemaining(int row, int col) {
+    /**
+     * Fills the remaining cells of the Sudoku board.
+     * @param row The current row to fill.
+     * @param col The current column to fill.
+     * @return true if all cells are filled correctly, false otherwise.
+     */
+    private boolean fillRemaining(int row, int col) {
         if (row == SIZE) return true;
         if (col == SIZE) return fillRemaining(row + 1, 0);
         if (board.get(row).get(col) != 0) return fillRemaining(row, col + 1);
@@ -72,6 +89,13 @@ public class Sudoku {
         return false;
     }
 
+    /**
+     * Checks if placing a number in a given cell is valid.
+     * @param row The row index of the cell.
+     * @param col The column index of the cell.
+     * @param n The number to be placed in the cell.
+     * @return true if the number can be placed, false otherwise.
+     */
     public boolean isValid(int row, int col, int n) {
         for (int i = 0; i < SIZE; i++) {
             if (board.get(i).get(col) == n) {
@@ -99,6 +123,12 @@ public class Sudoku {
         return true;
     }
 
+    /**
+     * Retrieves the number in the specified cell.
+     * @param row The row index of the cell.
+     * @param col The column index of the cell.
+     * @return The number in the cell at the specified row and column.
+     */
     public int getNumber(int row, int col) {
         return board.get(row).get(col);
     }

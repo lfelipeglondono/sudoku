@@ -41,6 +41,9 @@ public class GameController {
         showInitialSudoku();
     }
 
+    /**
+     * Sets up the Sudoku board by creating a TextField for each cell.
+     */
     private void setupSudokuBoard() {
         for (int row = 0; row < SIZE; row++) {
             sudokuBoard.add(new ArrayList<>());
@@ -51,6 +54,13 @@ public class GameController {
         }
     }
 
+    /**
+     * Creates a Sudoku cell.
+     *
+     * @param row Row of the cell.
+     * @param col Column of the cell.
+     * @return A TextField for the cell.
+     */
     private TextField createSudokuCell(int row, int col) {
         TextField textField = new TextField();
         sudokuBoard.get(row).add(textField);
@@ -60,6 +70,11 @@ public class GameController {
         return textField;
     }
 
+    /**
+     * Sets up the formatter for the TextField to allow only numbers from 1 to 6.
+     *
+     * @param textField The TextField to format.
+     */
     private void setupTextFieldFormatter(TextField textField) {
         UnaryOperator<TextFormatter.Change> filter = change -> {
             String newText = change.getControlNewText();
@@ -68,6 +83,13 @@ public class GameController {
         textField.setTextFormatter(new TextFormatter<>(filter));
     }
 
+    /**
+     * Sets up cell highlighting when interacting with the TextField.
+     *
+     * @param textField The TextField to set up.
+     * @param row       Row of the cell.
+     * @param col       Column of the cell.
+     */
     private void setupCellHighlighting(TextField textField, int row, int col) {
         textField.textProperty().addListener((observable, oldValue, newValue) ->
                 handleInputField(newValue, row, col));
@@ -81,6 +103,13 @@ public class GameController {
         });
     }
 
+    /**
+     * Styles a cell based on its position.
+     *
+     * @param textField The TextField to style.
+     * @param row       Row of the cell.
+     * @param col       Column of the cell.
+     */
     private void styleCell(TextField textField, int row, int col) {
         textField.getStyleClass().add("cell");
 
@@ -93,7 +122,16 @@ public class GameController {
         }
     }
 
+    /**
+     * Highlights the cells in the row and column of the currently focused cell.
+     *
+     * @param row Row of the cell.
+     * @param col Column of the cell.
+     */
     private void highlightCells(int row, int col) {
+        int subgridStartRow = (row / SUBGRID_ROWS) * SUBGRID_ROWS;
+        int subgridStartCol = (col / SUBGRID_COLS) * SUBGRID_COLS;
+
         for (int i = 0; i < SIZE; i++) {
             if (i != col) {
                 sudokuBoard.get(row).get(i).getStyleClass().add("others-highlight");
@@ -102,18 +140,32 @@ public class GameController {
                 sudokuBoard.get(i).get(col).getStyleClass().add("others-highlight");
             }
         }
+
+        for (int r = subgridStartRow; r < subgridStartRow + SUBGRID_ROWS; r++) {
+            for (int c = subgridStartCol; c < subgridStartCol + SUBGRID_COLS; c++) {
+                sudokuBoard.get(r).get(c).getStyleClass().add("others-highlight");
+            }
+        }
+
         sudokuBoard.get(row).get(col).getStyleClass().add("highlight");
     }
 
+    /**
+     * Clears the highlight from all cells.
+     */
     private void clearHighlight() {
         for (ArrayList<TextField> row : sudokuBoard) {
             for (TextField cell : row) {
                 cell.getStyleClass().remove("highlight");
                 cell.getStyleClass().remove("others-highlight");
+                cell.getStyleClass().remove("others-highlight");
             }
         }
     }
 
+    /**
+     * Shows the initial Sudoku by filling in some numbers on the board.
+     */
     public void showInitialSudoku() {
         for (int boxRow = 0; boxRow < SIZE; boxRow += SUBGRID_ROWS) {
             for (int boxCol = 0; boxCol < SIZE; boxCol += SUBGRID_COLS) {
@@ -122,6 +174,11 @@ public class GameController {
         }
     }
 
+    /**
+     * Fills a 2x3 subgrid with numbers.
+     * @param boxRow Starting row of the subgrid.
+     * @param boxCol Starting column of the subgrid.
+     */
     private void fillSubgrid(int boxRow, int boxCol) {
         int filled = 0;
 
@@ -140,6 +197,9 @@ public class GameController {
         }
     }
 
+    /**
+     * Handles the event when the hint button is pressed.
+     */
     @FXML
     void onHandleHintButton() {
         if (win()) {
@@ -161,18 +221,35 @@ public class GameController {
         textField.setPromptText(String.valueOf(sudokuGame.getNumber(row, col)));
     }
 
+    /**
+     * Checks if the game has been won.
+     * @return true if the game is won, false otherwise.
+     */
     public boolean win() {
+        TextField textField;
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
-                TextField textField = sudokuBoard.get(j).get(i);
+                textField = sudokuBoard.get(j).get(i);
                 if (textField.getText().isEmpty()) {
                     return false;
                 }
             }
         }
+
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
+                textField = sudokuBoard.get(i).get(j);
+
+                textField.setEditable(false);
+            }
+        }
+
         return true;
     }
 
+    /**
+     * Handles the event when the help button is pressed.
+     */
     @FXML
     void onHandleHelpButton() {
         alertBox.showAlert(Alert.AlertType.INFORMATION, "Sudoku - Help", "Instructions", """
@@ -186,6 +263,13 @@ public class GameController {
                 Winning the Game: The game is complete when the entire grid is filled correctly following the rules.""");
     }
 
+    /**
+     * Handles the event when the restart button is pressed.
+     * Prompts the user for confirmation to restart the game.
+     * If confirmed, it closes the current game window and starts a new game.
+     *
+     * @throws IOException If an I/O error occurs during the restart process.
+     */
     @FXML
     void onHandleRestartButton() throws IOException {
         boolean decision = alertBox.showAlert(Alert.AlertType.CONFIRMATION, "Sudoku - Game Start Confirmation", "Do you want to start playing?", "Click \"OK\" to start playing.");
@@ -200,6 +284,14 @@ public class GameController {
         }
     }
 
+    /**
+     * Handles input changes in the Sudoku cells.
+     * Validates the new value entered in a cell.
+     *
+     * @param newValue The new value entered by the user.
+     * @param row The row of the cell being modified.
+     * @param col The column of the cell being modified.
+     */
     public void handleInputField(String newValue, int row, int col) {
         TextField textField = sudokuBoard.get(row).get(col);
 
@@ -213,6 +305,16 @@ public class GameController {
         }
     }
 
+    /**
+     * Validates the input value for a specific cell.
+     * Checks if the input matches the expected value from the Sudoku game.
+     * If the game is won, shows a congratulatory message.
+     *
+     * @param textField The TextField being validated.
+     * @param newValueInt The new integer value entered.
+     * @param row The row of the cell.
+     * @param col The column of the cell.
+     */
     private void validateInput(TextField textField, int newValueInt, int row, int col) {
         textField.getStyleClass().remove("hint-cell");
         textField.getStyleClass().remove("error-cell");
@@ -228,6 +330,12 @@ public class GameController {
         }
     }
 
+    /**
+     * Handles invalid input by clearing the TextField and showing an error alert.
+     *
+     * @param textField The TextField with invalid input.
+     * @param newValue The invalid value entered by the user.
+     */
     private void handleInvalidInput(TextField textField, String newValue) {
         textField.setText("");
         textField.setPromptText(newValue);
