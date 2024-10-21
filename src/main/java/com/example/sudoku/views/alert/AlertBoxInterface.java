@@ -10,9 +10,11 @@ import javafx.scene.control.Alert;
 public interface AlertBoxInterface {
     /**
      * This method generates an informational alert.
+     * @param alertType type of window.
      * @param title Title of the window.
      * @param header Large title.
      * @param message Message of the information to be conveyed.
+     * @return decision of user if the window is the type confirmation
      */
     boolean showAlert(Alert.AlertType alertType, String title, String header, String message);
 }

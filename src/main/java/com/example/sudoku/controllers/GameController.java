@@ -180,13 +180,14 @@ public class GameController {
      * @param boxCol Starting column of the subgrid.
      */
     private void fillSubgrid(int boxRow, int boxCol) {
+        TextField textField;
         int filled = 0;
 
         while (filled < 2) {
             int row = boxRow + rand.nextInt(SUBGRID_ROWS);
             int col = boxCol + rand.nextInt(SUBGRID_COLS);
 
-            TextField textField = sudokuBoard.get(row).get(col);
+            textField = sudokuBoard.get(row).get(col);
             if (textField.getText().isEmpty()) {
                 int numberCell = sudokuGame.getNumber(row, col);
                 textField.getStyleClass().add("pinned-cell");
@@ -202,13 +203,13 @@ public class GameController {
      */
     @FXML
     void onHandleHintButton() {
+        TextField textField;
+        int row, col;
+
         if (win()) {
             alertBox.showAlert(Alert.AlertType.ERROR, "Sudoku - Information", "Ops!", "There are no numbers available to suggest to you.");
             return;
         }
-
-        TextField textField;
-        int row, col;
 
         do {
             row = rand.nextInt(SIZE);
